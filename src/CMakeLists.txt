@@ -23,6 +23,7 @@ set(qan_source_files
     qanStyle.cpp
     qanStyleManager.cpp
     qanUtils.cpp
+    qanAnalysisTimeHeatMap.cpp
     )
 
 set (qan_header_files
@@ -60,6 +61,7 @@ set (qan_header_files
     gtpo/node.hpp
     gtpo/observable.h
     gtpo/observer.h
+    qanAnalysisTimeHeatMap.h
     )
 
 source_group("Headers" FILES ${qan_header_files})
