@@ -759,6 +759,9 @@ void    EdgeItem::generateCurvedControlPoints(GeometryCache& cache) const noexce
     const QLineF line{cache.p1, cache.p2};
     const auto lineLength = line.length();
 
+    if (qAbs(lineLength) < 1e-5)
+        return;
+
     if ( srcPort == nullptr ||      // If there is a connection to a non-port item, generate a control point for it
          dstPort == nullptr ) {
         // SIMPLE CASE: Generate cubic curve control points with no dock, just use line center and normal

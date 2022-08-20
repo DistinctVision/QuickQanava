@@ -64,6 +64,15 @@ Node::Node(QObject* parent) :
 
 Node::~Node()
 {
+    // Disconnect in/out nodes model to block calling of slots of deleted object.
+    const auto inNodesModel = get_in_nodes().model();
+    if (inNodesModel != nullptr)
+        disconnect( inNodesModel, &qcm::ContainerModel::lengthChanged,
+                    this,         &qan::Node::inDegreeChanged);
+    const auto outNodesModel = get_out_nodes().model();
+    if (outNodesModel != nullptr)
+        disconnect( outNodesModel, &qcm::ContainerModel::lengthChanged,
+                    this,          &qan::Node::outDegreeChanged);
     if (_item)
         _item->deleteLater();
 }
