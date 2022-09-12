@@ -111,6 +111,17 @@ void    Connector::connectorReleased(QQuickItem* target) noexcept
     const auto dstNode = dstNodeItem ? dstNodeItem->getNode() :
                                        dstPortItem ? dstPortItem->getNode() : nullptr;
 
+    if (srcPortItem)
+    {
+        if (dstNodeItem)
+        {
+            if (!_graph->isEdgeBindable(srcPortItem.data(), dstNodeItem))
+            {
+                return;
+            }
+        }
+    }
+
     qan::Edge* createdEdge = nullptr;   // Result created edge
     if ( srcNode != nullptr &&          //// Regular edge node to node connection //////////
          dstNode != nullptr ) {

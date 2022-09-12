@@ -245,6 +245,29 @@ void    Graph::setContainerItem(QQuickItem* containerItem)
         emit containerItemChanged();
     }
 }
+
+void Graph::setPortToNodeConnectionChecking(const QJSValue& checkFunction)
+{
+    Q_ASSERT_X(checkFunction.isNull() || checkFunction.isCallable(), Q_FUNC_INFO,
+               "'checkFunction' must be a function or null.");
+    _port2nodeCheckConnectionFunc = checkFunction;
+}
+
+bool Graph::isEdgeBindable(PortItem* outPort, NodeItem* inNode)
+{
+    if (_port2nodeCheckConnectionFunc.isNull())
+        return true;
+    QQmlEngine* engine = qmlEngine( this );
+    QJSValue jsOutPort = engine->newQObject(outPort);
+    QJSValue jsInNode = engine->newQObject(inNode);
+
+    QJSValue jsCheckResult = _port2nodeCheckConnectionFunc.call(QJSValueList({ jsOutPort, jsInNode }));
+    if (!jsCheckResult.isBool()) {
+        (qCritical() << Q_FUNC_INFO).nospace() << ": a function result has unexpected type - " << jsCheckResult.toVariant().typeName();
+        return false;
+    }
+    return jsCheckResult.toBool();
+}
 //-----------------------------------------------------------------------------
 
 

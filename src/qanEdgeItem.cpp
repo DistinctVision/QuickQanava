@@ -439,7 +439,7 @@ void    EdgeItem::generateStraightEnds(GeometryCache& cache) const noexcept
 
     // Save generated p1 and p2 to gometry cache
     const auto p1 = line.p1();  // Keep a fast cache access to theses coordinates
-    const auto p2 = line.p2();
+    auto p2 = line.p2();
     cache.p1 = p1;
     cache.p2 = p2;
 
@@ -502,6 +502,35 @@ void    EdgeItem::generateStraightEnds(GeometryCache& cache) const noexcept
         const auto dstPort = qobject_cast<const qan::PortItem*>(cache.dstItem);
         if (dstPort != nullptr)
             cache.p2 = correctPortPoint(cache, dstPort->getDockType(), p2, cache.dstBrCenter, cache.dstBr );
+        // Align to center of block
+        /*else
+        {
+            QPointF delta = cache.p1 - cache.dstBrCenter;
+            if (qAbs(delta.x()) > qAbs(delta.y()))
+            {
+                if (delta.x() < 0)
+                {
+                    cache.p2.setX(cache.dstBr.left());
+                }
+                else
+                {
+                    cache.p2.setX(cache.dstBr.right());
+                }
+                cache.p2.setY(cache.dstBrCenter.y());
+            }
+            else
+            {
+                cache.p2.setX(cache.dstBrCenter.x());
+                if (delta.y() < 0)
+                {
+                    cache.p2.setY(cache.dstBr.top());
+                }
+                else
+                {
+                    cache.p2.setY(cache.dstBr.bottom());
+                }
+            }
+        }*/
     } // dock configuration block
 }
 

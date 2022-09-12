@@ -39,6 +39,7 @@
 
 // Qt headers
 #include <QString>
+#include <QJSValue>
 #include <QQuickItem>
 #include <QQmlParserStatus>
 #include <QSharedPointer>
@@ -144,6 +145,24 @@ signals:
     void                        containerItemChanged();
 private:
     QPointer< QQuickItem >      _containerItem{nullptr};
+    //@}
+    //-------------------------------------------------------------------------
+
+
+    /*! \name Extra connection checking from qml *///--------------------------------
+    //@{
+public:
+    /*! \brief Set a user function from qml for checking of connection possibility.
+     *  Arguments: outPortItem, inNodeItem
+     *
+     * \note If \c sourceNode is nullptr, checking is disabled.
+     */
+    Q_INVOKABLE void    setPortToNodeConnectionChecking(const QJSValue& checkFunction);
+private:
+    QJSValue _port2nodeCheckConnectionFunc;
+
+public:
+    bool isEdgeBindable(PortItem* outPort, NodeItem* inNode);
     //@}
     //-------------------------------------------------------------------------
 
