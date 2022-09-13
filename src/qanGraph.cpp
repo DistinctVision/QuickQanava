@@ -1146,6 +1146,7 @@ bool    selectPrimitive(Primitive_t& primitive,
     if (primitive.getItem() == nullptr)
         return false;
 
+    graph.getConnector()->setVisible(false);
     if (primitive.getItem()->getSelected()) {
         if (ctrlPressed)          // Click on a selected node + CTRL = deselect node
             primitive.getItem()->setSelected(false);
@@ -1219,6 +1220,7 @@ void    addToSelectionImpl(Primitive_t& primitive,
                            qcm::Container<QVector, Primitive_t*>& selectedPrimitives,
                            qan::Graph& graph)
 {
+    graph.getConnector()->setVisible(false);
     if (!selectedPrimitives.contains(&primitive)) {
         selectedPrimitives.append(&primitive);
         if (primitive.getItem() != nullptr) {

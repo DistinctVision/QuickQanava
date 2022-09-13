@@ -53,10 +53,10 @@ Qan.Connector {
     property color  edgeColor: Qt.rgba(0,0,0,1)
 
     //! Connector control radius (final diameter will be radius x 2).
-    property real   radius: 8
+    property real   radius: 10
 
-    //! Connector color (default to dodgerblue).
-    property color  connectorColor: "dodgerblue"
+    //! Connector color (default to mediumseagreen).
+    property color  connectorColor: "mediumseagreen"
 
     //! Default connector line width (default to 2.0).
     property real   connectorLineWidth: 2
@@ -83,6 +83,7 @@ Qan.Connector {
     width: radius * 2;  height: radius * 2
     x: connectorMargin
     y: topMargin
+    z: 10
 
     visible: false
     selectable: false
@@ -95,24 +96,24 @@ Qan.Connector {
         if (sourcePort) {
             switch (sourcePort.dockType) {
             case Qan.NodeItem.Left:
-                visualConnector.x = Qt.binding( function(){ return -width - connectorMargin } )
-                visualConnector.y = Qt.binding( function(){ return ( sourcePort.height - visualConnector.height ) / 2 } )
-                visualConnector.z = Qt.binding( function(){ return sourcePort.z + 1. } )
+                visualConnector.x = Qt.binding( () => { return -width - connectorMargin } )
+                visualConnector.y = Qt.binding( () => { return ( sourcePort.height - visualConnector.height ) / 2 } )
+                visualConnector.z = Qt.binding( () => { return sourcePort.z + 1. } )
                 break;
             case Qan.NodeItem.Top:
-                visualConnector.x = Qt.binding( function(){ return ( sourcePort.width + connectorMargin ) } )
-                visualConnector.y = Qt.binding( function(){ return ( sourcePort.height - visualConnector.height ) / 2 } )
-                visualConnector.z = Qt.binding( function(){ return sourcePort.z + 1. } )
+                visualConnector.x = Qt.binding( () => { return ( sourcePort.width + connectorMargin ) } )
+                visualConnector.y = Qt.binding( () => { return ( sourcePort.height - visualConnector.height ) / 2 } )
+                visualConnector.z = Qt.binding( () => { return sourcePort.z + 1. } )
                 break;
             case Qan.NodeItem.Right:
-                visualConnector.x = Qt.binding( function(){ return sourcePort.width + connectorMargin } )
-                visualConnector.y = Qt.binding( function(){ return ( sourcePort.height - visualConnector.height ) / 2 } )
-                visualConnector.z = Qt.binding( function(){ return sourcePort.z + 1. } )
+                visualConnector.x = Qt.binding( () => { return sourcePort.width + connectorMargin } )
+                visualConnector.y = Qt.binding( () => { return ( sourcePort.height - visualConnector.height ) / 2 } )
+                visualConnector.z = Qt.binding( () => { return sourcePort.z + 1. } )
                 break;
             case Qan.NodeItem.Bottom:
-                visualConnector.x = Qt.binding( function(){ return ( sourcePort.width + connectorMargin ) } )
-                visualConnector.y = Qt.binding( function(){ return ( sourcePort.height - visualConnector.height ) / 2 } )
-                visualConnector.z = Qt.binding( function(){ return sourcePort.z + 1. } )
+                visualConnector.x = Qt.binding( () => { return ( sourcePort.width + connectorMargin ) } )
+                visualConnector.y = Qt.binding( () => { return ( sourcePort.height - visualConnector.height ) / 2 } )
+                visualConnector.z = Qt.binding( () => { return sourcePort.z + 1. } )
                 break;
             }
         } else if (sourceNode) {
@@ -137,17 +138,20 @@ Qan.Connector {
     Drag.dragType: Drag.Internal
     Drag.onTargetChanged: { // Hilight a target node
         if (Drag.target) {
-            visualConnector.z = Drag.target.z + 1
-            if (connectorItem)
-                connectorItem.z = Drag.target.z + 1
-        }
-        if (!Drag.target &&
-            connectorItem) {
+            //visualConnector.z = Drag.target.z + 10
+            //if (connectorItem)
+            //    connectorItem.z = Drag.target.z + 10
+            if (!isBindable(Drag.target))
+            {
+                connectorItem.state = "FAILED"
+                return;
+            }
+        } else if (connectorItem) {
             connectorItem.state = "NORMAL"
             return;
         }
         // Drag.target is valid, trying to find a valid target
-        let source = visualConnector.sourceNode ? visualConnector.sourceNode : visualConnector.sourcePort
+        let source = visualConnector.sourceNode ? visualConnector.sourceNode : visualConnector.sourcePort.node
         if (source) {   // Note: source might be a qan::Node OR a qan::PortItem
             if (source.item &&
                 Drag.target === source.item) { // Prevent creation of a circuit on source node
@@ -163,7 +167,13 @@ Qan.Connector {
                                   Drag.target.connectable === Qan.NodeItem.InConnectable
                 if (target && connectable)
                     connectorItem.state = "HILIGHT"
+                else
+                    connectorItem.state = "NORMAL"
             }
+        }
+        else
+        {
+            connectorItem.state = "NORMAL"
         }
     }
     connectorItem: Rectangle {
@@ -182,18 +192,47 @@ Qan.Connector {
         states: [
             State { name: "NORMAL";
                 PropertyChanges { target: defaultConnectorItem; borderWidth: visualConnector.connectorLineWidth; scale: 1.0 }
+                PropertyChanges { target: visualConnector; connectorColor: "mediumseagreen" }
             },
-            State { name: "HILIGHT"
+            State { name: "HILIGHT";
                 PropertyChanges { target: defaultConnectorItem; borderWidth: visualConnector.connectorHilightLineWidth; scale: 1.7 }
+                PropertyChanges { target: visualConnector; connectorColor: "mediumseagreen" }
+            },
+            State { name: "FAILED";
+                PropertyChanges { target: defaultConnectorItem; borderWidth: visualConnector.connectorHilightLineWidth; scale: 1.7 }
+                PropertyChanges { target: visualConnector; connectorColor: "red" }
             }
+
         ]
         transitions: [
             Transition {
-                from: "NORMAL"; to: "HILIGHT"; PropertyAnimation { target: defaultConnectorItem; properties: "borderWidth, scale"; duration: 100 }
+                from: "NORMAL"; to: "HILIGHT";
+                PropertyAnimation { target: defaultConnectorItem; properties: "borderWidth, scale"; duration: 100 }
             },
             Transition {
-                from: "HILIGHT"; to: "NORMAL"; PropertyAnimation { target: defaultConnectorItem; properties: "borderWidth, scale"; duration: 150 }
-            } ]
+                from: "HILIGHT"; to: "NORMAL";
+                PropertyAnimation { target: defaultConnectorItem; properties: "borderWidth, scale"; duration: 150 }
+            },
+            Transition {
+                from: "NORMAL"; to: "FAILED";
+                PropertyAnimation { target: defaultConnectorItem; properties: "borderWidth, scale"; duration: 100 }
+                PropertyAnimation { target: visualConnector; properties: "connectorColor"; duration: 100 }
+            },
+            Transition {
+                from: "FAILED"; to: "NORMAL";
+                PropertyAnimation { target: defaultConnectorItem; properties: "borderWidth, scale"; duration: 150 }
+                PropertyAnimation { target: visualConnector; properties: "connectorColor"; duration: 150 }
+            },
+            Transition {
+                from: "HILIGHT"; to: "FAILED";
+                PropertyAnimation { target: defaultConnectorItem; properties: "borderWidth, scale"; duration: 100 }
+                PropertyAnimation { target: visualConnector; properties: "connectorColor"; duration: 100 }
+            },
+            Transition {
+                from: "FAILED"; to: "HILIGHT";
+                PropertyAnimation { target: defaultConnectorItem; properties: "borderWidth, scale"; duration: 100 }
+                PropertyAnimation { target: visualConnector; properties: "connectorColor"; duration: 100 }
+            }]
     }
     MouseArea {
         id: dropDestArea
@@ -210,7 +249,7 @@ Qan.Connector {
             if (edgeItem)       // Hide the edgeItem after a mouse release or it could
                 edgeItem.visible = false    // be visible on non rectangular nodes.
         }
-        onPressed: function(mouse) {
+        onPressed: (mouse) => {
             mouse.accepted = true
             connectorPressed()
             if (edgeItem)

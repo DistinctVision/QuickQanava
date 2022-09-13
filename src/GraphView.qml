@@ -153,7 +153,17 @@ Qan.AbstractGraphView {
                 graph.sendToFront(port.node.item)
             if (graph.connector &&
                 graph.connectorEnabled)
-                graph.connector.sourcePort = port
+            {
+                if (graph.connector.sourcePort === port)
+                {
+                    graph.connector.sourcePort = null
+                    graph.connector.sourcePort = port
+                }
+                else
+                {
+                    graph.connector.sourcePort = port
+                }
+            }
         } else if (graph) {
             graph.connector.visible = false
         }
@@ -191,6 +201,7 @@ Qan.AbstractGraphView {
                 // Connector should be half on top of node
                 graph.connector.y = -graph.connector.height / 2
             }
+
             if (node.item.resizable) {
                 nodeItemRatioWatcher.target = node.item
                 nodeResizer.parent = node.item

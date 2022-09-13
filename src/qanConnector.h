@@ -103,6 +103,9 @@ protected:
     Q_INVOKABLE void    connectorReleased(QQuickItem* target) noexcept;
     //! Should be called from QML when connector draggable item is pressed.
     Q_INVOKABLE void    connectorPressed() noexcept;
+    //! Check possible of binding
+    Q_INVOKABLE bool    isBindable(QQuickItem* target) noexcept;
+
 
 public:
     /*! \brief When set to true, connector use qan::Graph::createEdge() to generate edges, when set to false, signal

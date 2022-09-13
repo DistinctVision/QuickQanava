@@ -185,6 +185,62 @@ void    Connector::connectorPressed() noexcept
         _graph->selectNode(*_sourceNode);
 }
 
+bool Connector::isBindable(QQuickItem* target) noexcept
+{
+    if (!_graph)
+        return false;
+
+    const auto dstNodeItem = qobject_cast<qan::NodeItem*>(target);
+    const auto dstPortItem = qobject_cast<qan::PortItem*>(target);
+
+    const auto srcPortItem = _sourcePort;
+    const auto srcNode = _sourceNode ? _sourceNode.data() :
+                                       _sourcePort ? _sourcePort->getNode() : nullptr;
+    const auto dstNode = dstNodeItem ? dstNodeItem->getNode() :
+                                       dstPortItem ? dstPortItem->getNode() : nullptr;
+
+    if (srcPortItem)
+    {
+        if (dstNodeItem)
+        {
+            if (!_graph->isEdgeBindable(srcPortItem.data(), dstNodeItem))
+            {
+                return false;
+            }
+        }
+    }
+
+    if ( srcNode != nullptr &&          //// Regular edge node to node connection //////////
+         dstNode != nullptr ) {
+        bool create = true;    // Do not create edge if ports are not bindable, create if there no ports bindings are necessary
+
+        /*if (srcPortItem) {
+            qDebug() << "srcPortItem.multiplicity=" << srcPortItem->getMultiplicity();
+            qDebug() << "srcPortItem.outDegree=" << srcPortItem->getOutEdgeItems().size();
+            qDebug() << "edge source bindable=" << _graph->isEdgeSourceBindable(*srcPortItem );
+        }
+        if (dstPortItem) {
+            qDebug() << "dstPortItem.multiplicity=" << dstPortItem->getMultiplicity();
+            qDebug() << "srcPortItem.inDegree=" << dstPortItem->getInEdgeItems().size();
+            qDebug() << "edge source bindable=" << _graph->isEdgeDestinationBindable(*dstPortItem );
+        }*/
+
+        if ( srcPortItem &&
+             dstPortItem != nullptr )
+            create = _graph->isEdgeSourceBindable(*srcPortItem ) &&
+                     _graph->isEdgeDestinationBindable(*dstPortItem);
+        else if ( !srcPortItem &&
+                  dstPortItem != nullptr )
+            create = _graph->isEdgeDestinationBindable(*dstPortItem);
+        else if ( srcPortItem &&
+                  dstPortItem == nullptr )
+            create = _graph->isEdgeSourceBindable(*srcPortItem);
+        if (!create)
+            return false;
+    }
+    return true;
+}
+
 auto    Connector::getCreateDefaultEdge() const noexcept -> bool { return _createDefaultEdge; }
 auto    Connector::setCreateDefaultEdge(bool createDefaultEdge) noexcept -> void
 {
