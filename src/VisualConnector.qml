@@ -93,7 +93,7 @@ Qan.Connector {
      *  or port configuration, also restore position bindings to source.
      */
     function configureConnectorPosition() {
-        if (visualConnector === undefined)
+        if (visualConnector === null)
             return
         if (sourcePort) {
             switch (sourcePort.dockType) {
