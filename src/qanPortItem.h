@@ -154,6 +154,13 @@ public:
     EdgeItems&          getOutEdgeItems() noexcept { return _outEdgeItems; }
     const EdgeItems&    getOutEdgeItems() const noexcept { return _outEdgeItems; }
 
+public:
+    Q_PROPERTY( QAbstractListModel* inEdges READ qmlInEdgeModel CONSTANT FINAL )
+    QAbstractListModel* qmlInEdgeModel() { return qobject_cast<QAbstractListModel*>( _inEdgeItems.getModel() ); }
+
+    Q_PROPERTY( QAbstractListModel* outEdges READ qmlOutEdgeModel CONSTANT FINAL )
+    QAbstractListModel* qmlOutEdgeModel() { return qobject_cast<QAbstractListModel*>( _outEdgeItems.getModel() ); }
+
 protected:
     EdgeItems           _inEdgeItems;
     EdgeItems           _outEdgeItems;

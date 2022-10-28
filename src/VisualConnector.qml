@@ -99,23 +99,34 @@ Qan.Connector {
             switch (sourcePort.dockType) {
             case Qan.NodeItem.Left:
                 visualConnector.x = Qt.binding( () => { return -width - connectorMargin } )
-                visualConnector.y = Qt.binding( () => { return ( sourcePort.height - visualConnector.height ) / 2 } )
-                visualConnector.z = Qt.binding( () => { return sourcePort.z + 1. } )
+                visualConnector.y = Qt.binding( () => { const sourcePortHeight = (sourcePort !== null) ? sourcePort.height : 0
+                                                        return ( sourcePortHeight - visualConnector.height ) / 2 } )
+                visualConnector.z = Qt.binding( () => { const sourcePortZ = (sourcePort !== null) ? sourcePort.z : 0
+                                                        return sourcePortZ + 1. } )
                 break;
             case Qan.NodeItem.Top:
-                visualConnector.x = Qt.binding( () => { return ( sourcePort.width + connectorMargin ) } )
-                visualConnector.y = Qt.binding( () => { return ( sourcePort.height - visualConnector.height ) / 2 } )
-                visualConnector.z = Qt.binding( () => { return sourcePort.z + 1. } )
+                visualConnector.x = Qt.binding( () => { const sourcePortWidth = (sourcePort !== null) ? sourcePort.width : 0
+                                                        return ( sourcePortWidth + connectorMargin ) } )
+                visualConnector.y = Qt.binding( () => { const sourcePortHeight = (sourcePort !== null) ? sourcePort.height : 0
+                                                        return ( sourcePortHeight - visualConnector.height ) / 2 } )
+                visualConnector.z = Qt.binding( () => { const sourcePortZ = (sourcePort !== null) ? sourcePort.z : 0
+                                                        return sourcePortZ + 1. } )
                 break;
             case Qan.NodeItem.Right:
-                visualConnector.x = Qt.binding( () => { return sourcePort.width + connectorMargin } )
-                visualConnector.y = Qt.binding( () => { return ( sourcePort.height - visualConnector.height ) / 2 } )
-                visualConnector.z = Qt.binding( () => { return sourcePort.z + 1. } )
+                visualConnector.x = Qt.binding( () => { const sourcePortWidth = (sourcePort !== null) ? sourcePort.width : 0
+                                                        return sourcePortWidth + connectorMargin } )
+                visualConnector.y = Qt.binding( () => { const sourcePortHeight = (sourcePort !== null) ? sourcePort.height : 0
+                                                        return ( sourcePortHeight - visualConnector.height ) / 2 } )
+                visualConnector.z = Qt.binding( () => { const sourcePortZ = (sourcePort !== null) ? sourcePort.z : 0
+                                                        return sourcePortZ + 1. } )
                 break;
             case Qan.NodeItem.Bottom:
-                visualConnector.x = Qt.binding( () => { return ( sourcePort.width + connectorMargin ) } )
-                visualConnector.y = Qt.binding( () => { return ( sourcePort.height - visualConnector.height ) / 2 } )
-                visualConnector.z = Qt.binding( () => { return sourcePort.z + 1. } )
+                visualConnector.x = Qt.binding( () => { const sourcePortWidth = (sourcePort !== null) ? sourcePort.width : 0
+                                                        return ( sourcePortWidth + connectorMargin ) } )
+                visualConnector.y = Qt.binding( () => { const sourcePortHeight = (sourcePort !== null) ? sourcePort.height : 0
+                                                        return ( sourcePortHeight - visualConnector.height ) / 2 } )
+                visualConnector.z = Qt.binding( () => { const sourcePortZ = (sourcePort !== null) ? sourcePort.z : 0
+                                                        return sourcePortZ + 1. } )
                 break;
             }
         } else if (sourceNode) {
